@@ -1,150 +1,131 @@
-# DOCUMENTATION: https://docs.artillex-studios.com/axplayerwarps.html
+# DOCUMENTATION: https://docs.papermc.io/paper/dev/dialogs/
+# All inputs now use the Paper Dialog API (requires Paper 1.21.7+).
 #
-# valid types:
-#  - sign (sign gui)
-#  - anvil (anvil gui)
-#  - chat (input in chat)
+# input types:
+#   text          - normal text field
+#   number        - number range slider
+#   bool          - true/false checkbox
+#   single        - single option selector
 #
-# note: only the selected type's section will be used, you can even delete the unused ones if you want
-
-# if the player writes any of these in chat mode, the plugin will cancel the input
-# make sure to change this in the messages as well if you change it here!
-chat-cancel-words:
-  - "cancel"
+# built-in placeholders in title/body/labels: %player%
+# PlaceholderAPI placeholders are also supported.
 
 rate:
-  type: "anvil"
-  # keep the first line empty when using sign
-  sign:
-    - ""
-    - "-----------"
-    - "Write new rating!"
-    - "Valid values: 1-5"
-  anvil:
-    title: "&0Rate Warp"
-    item:
-      material: PAPER
-      glow: true
-      name: "&fRATING HERE"
-      lore:
-        - "&#33EEBBValid values: 1-5"
-  chat:
-    - "&#33EEBBWrite your rating in the chat: &#DDDDDD(write &#33EEBBcancel &#DDDDDDto stop)"
-    - "&#DDDDDDValid values: 1-5"
+  title: "Rate Warp"
+  body:
+    - "Select a rating from 1 to 5."
+  input:
+    type: "number"
+    key: "value"
+    label: "Rating"
+    min: 1
+    max: 5
+    step: 1
+    initial: 5
+    width: 200
+  confirm:
+    label: "Rate"
+    tooltip: "Submit your rating"
+  cancel:
+    label: "Cancel"
+    tooltip: "Close without rating"
 
 search:
-  type: "chat"
-  # keep the first line empty when using sign
-  sign:
-    - ""
-    - "-----------"
-    - "Search for warp"
-    - "in the first line!"
-  anvil:
-    title: "&0Search Here"
-    item:
-      material: PAPER
-      glow: true
-      name: "&fSEARCH HERE"
-      lore:
-        - "&#33EEBB↑ searching for"
-  chat:
-    - "&#33EEBBWhat do you want to search for? &#DDDDDD(write &#33EEBBcancel &#DDDDDDto stop)"
+  title: "Search Warps"
+  body:
+    - "Type a warp name or an owner's name."
+  input:
+    type: "text"
+    key: "value"
+    label: "Search"
+    max-length: 64
+  confirm:
+    label: "Search"
+    tooltip: "Search for warps"
+  cancel:
+    label: "Cancel"
+    tooltip: "Close"
 
 rename:
-  type: "anvil"
-  # keep the first line empty when using sign
-  sign:
-    - ""
-    - "-----------"
-    - "Write new name"
-    - "in the first line!"
-  anvil:
-    title: "&0Rename Warp"
-    item:
-      material: PAPER
-      glow: true
-      name: "&fNEW NAME HERE"
-      lore:
-        - "&#33EEBB↑ new name"
-  chat:
-    - "&#33EEBBWrite the new warp name in the chat: &#DDDDDD(write &#33EEBBcancel &#DDDDDDto stop)"
+  title: "Rename Warp"
+  body:
+    - "Type the new warp name."
+  input:
+    type: "text"
+    key: "value"
+    label: "New name"
+    max-length: 16
+  confirm:
+    label: "Rename"
+    tooltip: "Apply the new name"
+  cancel:
+    label: "Cancel"
+    tooltip: "Keep the current name"
 
 price:
-  type: "anvil"
-  # keep the first line empty when using sign
-  sign:
-    - ""
-    - "-----------"
-    - "Write new price"
-    - "in the first line!"
-  anvil:
-    title: "&0New Price"
-    item:
-      material: PAPER
-      glow: true
-      name: "&fPRICE HERE"
-      lore:
-        - "&#33EEBB↑ price"
-  chat:
-    - "&#33EEBBWrite the new price in the chat: &#DDDDDD(write &#33EEBBcancel &#DDDDDDto stop)"
+  title: "Teleport Price"
+  body:
+    - "Type the new teleport price."
+    - "Use 0 to make the warp free."
+  input:
+    type: "text"
+    key: "value"
+    label: "Price"
+    max-length: 16
+  confirm:
+    label: "Save"
+    tooltip: "Set the new price"
+  cancel:
+    label: "Cancel"
+    tooltip: "Keep the current price"
 
 add-line:
-  type: "chat"
-  # keep the first line empty when using sign
-  sign:
-    - ""
-    - "-----------"
-    - "Write new text"
-    - "in the first line!"
-  anvil:
-    title: "&0Add Line"
-    item:
-      material: PAPER
-      glow: true
-      name: "&fNEW LINE HERE"
-      lore:
-        - "&#33EEBB↑ new line"
-  chat:
-    - "&#33EEBBWrite the new line in the chat: &#DDDDDD(write &#33EEBBcancel &#DDDDDDto stop)"
+  title: "Add Description Line"
+  body:
+    - "Type the new description line."
+  input:
+    type: "text"
+    key: "value"
+    label: "Line"
+    max-length: 50
+  confirm:
+    label: "Add"
+    tooltip: "Add this line"
+  cancel:
+    label: "Cancel"
+    tooltip: "Do not add"
 
 add-player:
-  type: "anvil"
-  # keep the first line empty when using sign
-  sign:
-    - ""
-    - "-----------"
-    - "Write the name"
-    - "in the first line!"
-  anvil:
-    title: "&0Add Player"
-    item:
-      material: PAPER
-      glow: true
-      name: "&fPLAYER'S NAME HERE"
-      lore:
-        - "&#33EEBB↑ name of player"
-  chat:
-    - "&#33EEBBWrite the name of the player in the chat: &#DDDDDD(write &#33EEBBcancel &#DDDDDDto stop)"
+  title: "Add Player"
+  body:
+    - "Type the player's name."
+  input:
+    type: "text"
+    key: "value"
+    label: "Player"
+    max-length: 16
+  confirm:
+    label: "Add"
+    tooltip: "Add the player"
+  cancel:
+    label: "Cancel"
+    tooltip: "Close"
 
 transfer:
-  type: "anvil"
-  # keep the first line empty when using sign
-  sign:
-    - ""
-    - "-----------"
-    - "Write the name"
-    - "in the first line!"
-  anvil:
-    title: "&0Add Player"
-    item:
-      material: PAPER
-      glow: true
-      name: "&fPLAYER'S NAME HERE"
-      lore:
-        - "&#33EEBB↑ name of player"
-  chat:
-    - "&#33EEBBWrite the name of the player in the chat: &#DDDDDD(write &#33EEBBcancel &#DDDDDDto stop)"
+  title: "Transfer Warp"
+  body:
+    - "Type the name of the player who should receive this warp."
+  input:
+    type: "text"
+    key: "value"
+    label: "Player"
+    max-length: 16
+  confirm:
+    label: "Transfer"
+    tooltip: "Transfer ownership"
+  cancel:
+    label: "Cancel"
+    tooltip: "Keep ownership"
 
 # do not change this
-version: 1
+version: 2

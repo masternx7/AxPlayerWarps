@@ -513,7 +513,7 @@ public class Base implements Database {
                 warp.getLocation().getYaw(),
                 warp.getLocation().getPitch(),
                 warp.getName(),
-                warp.getDescription(),
+                warp.getRealDescription(),
                 serializeIcon(warp.getRealIcon()),
                 warp.getCurrency() == null ? null : getCurrencyId(warp.getCurrencyIntegration().getName()),
                 warp.getTeleportPrice(),

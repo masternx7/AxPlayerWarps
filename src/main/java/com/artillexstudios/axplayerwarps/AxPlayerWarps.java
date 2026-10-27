@@ -31,7 +31,6 @@ import com.artillexstudios.axplayerwarps.guis.RecentsGui;
 import com.artillexstudios.axplayerwarps.guis.WarpsGui;
 import com.artillexstudios.axplayerwarps.guis.WhitelistGui;
 import com.artillexstudios.axplayerwarps.hooks.HookManager;
-import com.artillexstudios.axplayerwarps.input.InputListener;
 import com.artillexstudios.axplayerwarps.libraries.Libraries;
 import com.artillexstudios.axplayerwarps.listeners.MoveListener;
 import com.artillexstudios.axplayerwarps.listeners.PlayerListeners;
@@ -131,7 +130,6 @@ public final class AxPlayerWarps extends AxPlugin {
         getServer().getPluginManager().registerEvents(new WorldListeners(), this);
         getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
         getServer().getPluginManager().registerEvents(new MoveListener(), this);
-        getServer().getPluginManager().registerEvents(new InputListener(), this);
 
         metrics = new AxMetrics(this, 17);
         metrics.start();

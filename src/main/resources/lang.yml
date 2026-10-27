@@ -10,8 +10,16 @@ help:
   - " <#33CCBB>➤ <white>/axpw warp <warp> <#DDDDDD>| <#BBFFDD>Teleport to warp"
   - " <#33CCBB>➤ <white>/axpw info <warp> <#DDDDDD>| <#BBFFDD>Warp information"
   - " <#33CCBB>➤ <white>/axpw set <warp> <#DDDDDD>| <#BBFFDD>Update warp location"
-  - " <#33CCBB>➤ <white>/axpw icon set <warp> <#DDDDDD>| <#BBFFDD>Set warp icon from held item"
-  - " <#33CCBB>➤ <white>/axpw icon remove <warp> <#DDDDDD>| <#BBFFDD>Reset warp icon"
+  - " <#33CCBB>➤ <white>/axpw rename <warp> <name> <#DDDDDD>| <#BBFFDD>Rename warp"
+  - " <#33CCBB>➤ <white>/axpw desc add|remove|clear <warp> [text] <#DDDDDD>| <#BBFFDD>Edit description"
+  - " <#33CCBB>➤ <white>/axpw access <warp> <access> <#DDDDDD>| <#BBFFDD>Set access mode"
+  - " <#33CCBB>➤ <white>/axpw price <warp> <price> [currency] <#DDDDDD>| <#BBFFDD>Set teleport price"
+  - " <#33CCBB>➤ <white>/axpw free <warp> <#DDDDDD>| <#BBFFDD>Make warp free"
+  - " <#33CCBB>➤ <white>/axpw transfer <warp> <player> <#DDDDDD>| <#BBFFDD>Transfer ownership"
+  - " <#33CCBB>➤ <white>/axpw whitelist add|remove|clear <warp> [player] <#DDDDDD>| <#BBFFDD>Edit whitelist"
+  - " <#33CCBB>➤ <white>/axpw blacklist add|remove|clear <warp> [player] <#DDDDDD>| <#BBFFDD>Edit blacklist"
+  - " <#33CCBB>➤ <white>/axpw bank <warp> <#DDDDDD>| <#BBFFDD>Withdraw warp earnings"
+  - " <#33CCBB>➤ <white>/axpw icon set|remove <warp> <#DDDDDD>| <#BBFFDD>Edit warp icon"
   - " <#33CCBB>➤ <white>/axpw settings <warp> <#DDDDDD>| <#BBFFDD>Open warp settings"
   - " <#33CCBB>➤ <#44CCBB>/axpwadmin <#DDDDDD>| <#BBFFDD>Admin commands"
   - " "
@@ -91,6 +99,9 @@ editor:
   update-name: "&#BBFFDDYou have changed the warp's name!"
   update-icon: "&#BBFFDDYou have changed the warp's icon!"
   remove-icon: "&#BBFFDDYou have removed the warp's icon!"
+  update-description: "&#BBFFDDYou have changed the warp's description!"
+  update-access: "&#BBFFDDYou have changed the warp's access to &#33EEBB%access%&#BBFFDD!"
+  update-price: "&#BBFFDDYou have changed the warp's teleport price to &#33EEBB%price%&#BBFFDD!"
   transferred: "&#BBFFDDYou have transferred the warp's ownership to &#33EEBB%player%&#BBFFDD!"
   new-owner: "&#33EEBB%player% &#BBFFDDhas transferred the ownership of the &#33EEBB%warp% &#BBFFDDwarp to you!"
 
@@ -126,6 +137,9 @@ errors:
   must-be-positive: "&#FF4444The given value is not a positive number!"
   invalid-name: "&#FF4444The given name is not valid."
   no-item-in-hand: "&#FF4444You must hold an item in your main hand!"
+  missing-text: "&#FF4444You must specify a text value!"
+  no-description: "&#FF4444The warp has no description lines!"
+  currency-not-found: "&#FF4444The given currency could not be found!"
   name-exists: "&#FF4444A warp with this name already exists."
   max-lines: "&#FF4444You can not add more lines to the warp's description!"
   max-length: "&#FF4444The length of warp description lines can't be more than %length% characters!"
@@ -170,4 +184,4 @@ commands:
 update-notifier: "&#88CCFFThere is a new version of AxPlayerWarps available! &#DDDDDD(&#FFFFFFcurrent: &#FF0000%current% &#DDDDDD| &#FFFFFFlatest: &#00FF00%latest%&#DDDDDD)"
 
 # do not change this
-version: 8
+version: 9

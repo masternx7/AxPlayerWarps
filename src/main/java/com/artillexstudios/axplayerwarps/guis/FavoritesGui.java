@@ -8,7 +8,6 @@ import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettin
 import com.artillexstudios.axapi.nms.wrapper.ServerPlayerWrapper;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
-import com.artillexstudios.axguiframework.PaginatedGuiFrame;
 import com.artillexstudios.axguiframework.item.AxGuiItem;
 import com.artillexstudios.axguiframework.libs.gui.guis.Gui;
 import com.artillexstudios.axguiframework.libs.gui.guis.PaginatedGui;
@@ -30,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.CONFIG;
 
-public class FavoritesGui extends PaginatedGuiFrame {
+public class FavoritesGui extends PapiPaginatedGuiFrame {
     private static final Config GUI = new Config(new File(AxPlayerWarps.getInstance().getDataFolder(), "guis/favorites.yml"),
             AxPlayerWarps.getInstance().getResource("guis/favorites.yml"),
             GeneralSettings.builder().setUseDefaults(false).build(),

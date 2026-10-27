@@ -11,7 +11,6 @@ import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.NumberUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
-import com.artillexstudios.axguiframework.GuiFrame;
 import com.artillexstudios.axguiframework.actions.GuiActions;
 import com.artillexstudios.axguiframework.item.AxGuiItem;
 import com.artillexstudios.axguiframework.libs.gui.guis.Gui;
@@ -40,7 +39,7 @@ import java.util.Map;
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.CONFIG;
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.MESSAGEUTILS;
 
-public class EditWarpGui extends GuiFrame<Gui> {
+public class EditWarpGui extends PapiGuiFrame<Gui> {
     private static final Config GUI = new Config(new File(AxPlayerWarps.getInstance().getDataFolder(), "guis/edit-warp.yml"),
             AxPlayerWarps.getInstance().getResource("guis/edit-warp.yml"),
             GeneralSettings.builder().setUseDefaults(false).build(),

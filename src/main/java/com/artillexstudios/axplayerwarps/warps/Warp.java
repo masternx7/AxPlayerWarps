@@ -69,7 +69,7 @@ public class Warp {
         location.setZ(location.getBlockZ());
         location.add(0.5, 0, 0.5);
         this.created = created;
-        this.description = description;
+        this.description = cleanDescription(description);
         this.name = name;
         this.location = location;
         this.worldName = worldName;
@@ -138,12 +138,27 @@ public class Warp {
     }
 
     public void setDescription(@Nullable String description) {
-        this.description = description;
+        this.description = cleanDescription(description);
     }
 
     public void setDescription(List<String> description) {
-        String newDesc = String.join("\n", description);
-        this.description = newDesc.isBlank() ? null : newDesc;
+        this.description = cleanDescription(String.join("\n", description));
+    }
+
+    @Nullable
+    private static String cleanDescription(@Nullable String description) {
+        if (description == null) return null;
+
+        String defaultDescription = CONFIG.getString("warp-description.default", "");
+        StringBuilder cleaned = new StringBuilder();
+        for (String line : description.split("\n", -1)) {
+            if (!defaultDescription.isEmpty() && line.equals(defaultDescription)) continue;
+            if (cleaned.length() > 0) cleaned.append('\n');
+            cleaned.append(line);
+        }
+
+        String result = cleaned.toString();
+        return result.isBlank() ? null : result;
     }
 
     public long getCreated() {
@@ -476,7 +491,7 @@ public class Warp {
         Player player = Bukkit.getPlayer(owner);
         CurrencyIntegration integration = getCurrencyIntegration();
         if (earnedMoney <= 0 || currency == null || integration == null) {
-            MESSAGEUTILS.sendLang(player, "errors.nothing-withdrawable");
+            if (player != null) MESSAGEUTILS.sendLang(player, "errors.nothing-withdrawable");
             return;
         }
         double previous = earnedMoney;
@@ -487,7 +502,7 @@ public class Warp {
                 return;
             }
 
-            MESSAGEUTILS.sendLang(player, "money.got", Map.of(
+            if (player != null) MESSAGEUTILS.sendLang(player, "money.got", Map.of(
                 "%price%", FormatUtils.formatCurrency(integration, previous)
             ));
             AxPlayerWarps.getThreadedQueue().submit(() -> {

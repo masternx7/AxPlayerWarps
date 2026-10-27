@@ -1,31 +1,23 @@
 package com.artillexstudios.axplayerwarps.commands.subcommands;
 
 import com.artillexstudios.axplayerwarps.AxPlayerWarps;
+import com.artillexstudios.axplayerwarps.enums.IconAction;
 import com.artillexstudios.axplayerwarps.warps.Warp;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Map;
 
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.MESSAGEUTILS;
 
 public enum Icon {
     INSTANCE;
 
-    public void execute(Player sender, String action, Warp warp) {
+    public void execute(Player sender, IconAction action, Warp warp) {
         if (!canEdit(sender, warp)) return;
 
-        if (action.equalsIgnoreCase("set")) {
-            set(sender, warp);
-            return;
+        switch (action) {
+            case SET -> set(sender, warp);
+            case REMOVE -> remove(sender, warp);
         }
-
-        if (action.equalsIgnoreCase("remove")) {
-            remove(sender, warp);
-            return;
-        }
-
-        MESSAGEUTILS.sendLang(sender, "commands.invalid-value", Map.of("%value%", action));
     }
 
     private void set(Player sender, Warp warp) {

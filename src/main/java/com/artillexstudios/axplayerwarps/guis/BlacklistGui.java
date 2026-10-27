@@ -9,7 +9,6 @@ import com.artillexstudios.axapi.nms.wrapper.ServerPlayerWrapper;
 import com.artillexstudios.axapi.placeholders.PlaceholderHandler;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
-import com.artillexstudios.axguiframework.PaginatedGuiFrame;
 import com.artillexstudios.axguiframework.actions.GuiActions;
 import com.artillexstudios.axguiframework.item.AxGuiItem;
 import com.artillexstudios.axguiframework.libs.gui.guis.Gui;
@@ -21,6 +20,7 @@ import com.artillexstudios.axplayerwarps.enums.AccessList;
 import com.artillexstudios.axplayerwarps.input.InputManager;
 import com.artillexstudios.axplayerwarps.user.Users;
 import com.artillexstudios.axplayerwarps.user.WarpUser;
+import com.artillexstudios.axplayerwarps.utils.PlaceholderUtils;
 import com.artillexstudios.axplayerwarps.warps.Warp;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.MESSAGEUTILS;
 
-public class BlacklistGui extends PaginatedGuiFrame {
+public class BlacklistGui extends PapiPaginatedGuiFrame {
     private static final Config GUI = new Config(new File(AxPlayerWarps.getInstance().getDataFolder(), "guis/blacklist.yml"),
             AxPlayerWarps.getInstance().getResource("guis/blacklist.yml"),
             GeneralSettings.builder().setUseDefaults(false).build(),
@@ -136,11 +136,9 @@ public class BlacklistGui extends PaginatedGuiFrame {
                     }
                 }
 
-                builder.setName(PlaceholderHandler.parse(GUI.getString(accessList.getRoute() + ".name"), accessPlayer, player));
+                builder.setName(PlaceholderUtils.parse(player, PlaceholderHandler.parse(GUI.getString(accessList.getRoute() + ".name"), accessPlayer, player)));
                 List<String> lore = new ArrayList<>(GUI.getStringList(accessList.getRoute() + ".lore"));
-                lore.replaceAll(s -> {
-                    return PlaceholderHandler.parse(s, accessPlayer, player);
-                });
+                lore.replaceAll(s -> PlaceholderUtils.parse(player, PlaceholderHandler.parse(s, accessPlayer, player)));
                 builder.setLore(lore);
 
                 gui.addItem(new AxGuiItem(builder.get(), event -> {

@@ -9,7 +9,6 @@ import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettin
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.NumberUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
-import com.artillexstudios.axguiframework.GuiFrame;
 import com.artillexstudios.axguiframework.actions.GuiActions;
 import com.artillexstudios.axguiframework.libs.gui.guis.Gui;
 import com.artillexstudios.axguiframework.replacements.Replacements;
@@ -26,7 +25,7 @@ import java.util.Map;
 
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.MESSAGEUTILS;
 
-public class RateWarpGui extends GuiFrame<Gui> {
+public class RateWarpGui extends PapiGuiFrame<Gui> {
     private static final Config GUI = new Config(new File(AxPlayerWarps.getInstance().getDataFolder(), "guis/rate-warp.yml"),
             AxPlayerWarps.getInstance().getResource("guis/rate-warp.yml"),
             GeneralSettings.builder().setUseDefaults(false).build(),

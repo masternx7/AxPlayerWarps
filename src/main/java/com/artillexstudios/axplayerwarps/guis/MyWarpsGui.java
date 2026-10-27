@@ -9,7 +9,6 @@ import com.artillexstudios.axapi.nms.wrapper.ServerPlayerWrapper;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.AsyncUtils;
 import com.artillexstudios.axapi.utils.ItemBuilder;
-import com.artillexstudios.axguiframework.PaginatedGuiFrame;
 import com.artillexstudios.axguiframework.actions.GuiActions;
 import com.artillexstudios.axguiframework.item.AxGuiItem;
 import com.artillexstudios.axguiframework.libs.gui.guis.Gui;
@@ -37,7 +36,7 @@ import static com.artillexstudios.axplayerwarps.AxPlayerWarps.CONFIG;
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.LANG;
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.MESSAGEUTILS;
 
-public class MyWarpsGui extends PaginatedGuiFrame {
+public class MyWarpsGui extends PapiPaginatedGuiFrame {
     private static final Config GUI = new Config(new File(AxPlayerWarps.getInstance().getDataFolder(), "guis/my-warps.yml"),
             AxPlayerWarps.getInstance().getResource("guis/my-warps.yml"),
             GeneralSettings.builder().setUseDefaults(false).build(),
