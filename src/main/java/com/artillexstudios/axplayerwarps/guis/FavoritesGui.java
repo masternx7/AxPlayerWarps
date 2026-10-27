@@ -57,13 +57,20 @@ public class FavoritesGui extends PaginatedGuiFrame {
         addReplacement(new Replacements("%current_page%", () -> String.valueOf(gui.getCurrentPageNum())));
         addReplacement(new Replacements("%max_page%", () -> String.valueOf(gui.getPagesNum())));
         addReplacement(new Replacements("%pages%", () -> String.valueOf(gui.getPagesNum())));
+        addReplacement(new Replacements("%player%", player.getName()));
 
         setGui(gui, () -> parseText(GUI.getString("title", "")));
         user.addGui(this);
     }
 
     public static boolean reload() {
-        return GUI.reload();
+        if (!GUI.reload()) return false;
+        List<String> lore = GUI.getStringList("warp.lore");
+        if (lore.removeIf(line -> line.contains("%category%"))) {
+            GUI.set("warp.lore", lore);
+            GUI.save();
+        }
+        return true;
     }
 
     public void open() {
@@ -84,8 +91,8 @@ public class FavoritesGui extends PaginatedGuiFrame {
         AxPlayerWarps.getThreadedQueue().submit(() -> {
             gui.clearPageItems();
             for (Warp warp : user.getFavorites()) {
-                Material icon = warp.getIcon();
-                ItemBuilder builder = ItemBuilder.create(new ItemStack(icon));
+                ItemStack icon = warp.getIcon();
+                ItemBuilder builder = ItemBuilder.create(icon);
                 builder.setName(parseText(GUI.getString("warp.name"), warp));
 
                 String[] description = warp.getDescription().split("\n", CONFIG.getInt("warp-description.max-lines", 3));
@@ -103,7 +110,7 @@ public class FavoritesGui extends PaginatedGuiFrame {
                     }
                 }
                 builder.setLore(parseText(lore, warp));
-                if (icon == Material.PLAYER_HEAD) {
+                if (warp.getRealIcon() == null && icon.getType() == Material.PLAYER_HEAD) {
                     Player pl = Bukkit.getPlayer(warp.getOwner());
                     if (pl != null) {
                         ServerPlayerWrapper wrapper = ServerPlayerWrapper.wrap(pl);

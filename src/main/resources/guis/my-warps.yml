@@ -1,6 +1,8 @@
 # DOCUMENTATION: https://docs.artillex-studios.com/axplayerwarps.html
 # ITEM BUILDER: https://docs.artillex-studios.com/item-builder.html
 
+# title supports PlaceholderAPI placeholders and built-in placeholders:
+# %player%, %page%, %current_page%, %max_page%, %pages%, %search%
 title: "&0&lAxPWarps > &8My Warps (%page%/%pages%)"
 # a gui can have 1-6 rows
 rows: 6
@@ -23,7 +25,6 @@ warp:
     - "&#33EEBBInformation"
     - "  &#444444❙ &#BBFFDDCreated: &f%created%"
     - "  &#444444❙ &#BBFFDDLocation: &f%world%, %x%, %y%, %z%"
-    - "  &#444444❙ &#BBFFDDCategory: &f%category%"
     - " "
     - "&#33EEBBStatistics"
     - "  &#444444❙ &#BBFFDDVisits: &f%visitors_unique%"
@@ -108,20 +109,6 @@ next-page:
   actions:
     - "[SOUND] ui.button.click|1|1"
     - "[PAGE] next"
-
-category:
-  slot: 52
-  material: "HOPPER"
-  name: "&#33EEBB&lᴄᴀᴛᴇɢᴏʀʏ"
-  lore:
-    - " "
-    - " &#33EEBBCurrently selected:"
-    - "  &#444444❙ &#BBFFDD%category_selected%"
-    - " "
-    - "&#33EEBB&lClick &#DDDDDD» &#BBFFDDChange Category"
-    - "&#33EEBB&lShift + Click &#DDDDDD» &#BBFFDDDelete Category Filter"
-  actions:
-    - "[SOUND] ui.button.click|1|1"
 
 search:
   slot: 53

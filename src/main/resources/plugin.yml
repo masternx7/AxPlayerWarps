@@ -19,8 +19,12 @@ permissions:
     default: op
   axplayerwarps.create:
     default: true
+  axplayerwarps.icon:
+    default: true
   axplayerwarps.warps.1:
     default: true
+  axplayerwarps.warmup.bypass:
+    default: op
   axplayerwarps.delay-bypass:
     default: op
   axplayerwarps.admin.help:

@@ -9,7 +9,6 @@ import com.artillexstudios.axplayerwarps.AxPlayerWarps;
 import com.artillexstudios.axplayerwarps.api.events.AxPlayerWarpsDeleteEvent;
 import com.artillexstudios.axplayerwarps.api.events.AxPlayerWarpsPreTeleportEvent;
 import com.artillexstudios.axplayerwarps.api.events.AxPlayerWarpsTeleportEvent;
-import com.artillexstudios.axplayerwarps.category.Category;
 import com.artillexstudios.axplayerwarps.database.impl.Base;
 import com.artillexstudios.axplayerwarps.enums.Access;
 import com.artillexstudios.axplayerwarps.enums.AccessList;
@@ -23,6 +22,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -45,13 +45,12 @@ public class Warp {
     private Location location;
     private String name;
     private @Nullable String description;
-    private @Nullable Category category;
     private final long created;
     private Access access;
     private @Nullable String currency;
     private double teleportPrice;
     private double earnedMoney;
-    private Material icon;
+    private @Nullable ItemStack icon;
     private int favorites;
     private HashMap<UUID, Integer> rating = new HashMap<>();
     private int visits;
@@ -61,9 +60,9 @@ public class Warp {
     private final String worldName;
 
     public Warp(Integer id, long created, @Nullable String description, String name,
-                Location location, String worldName, @Nullable Category category,
+                Location location, String worldName,
                 UUID owner, String ownerName, Access access, @Nullable String currency,
-                double teleportPrice, double earnedMoney, @Nullable Material icon
+                double teleportPrice, double earnedMoney, @Nullable ItemStack icon
     ) {
         location.setX(location.getBlockX());
         location.setY(location.getBlockY());
@@ -74,14 +73,13 @@ public class Warp {
         this.name = name;
         this.location = location;
         this.worldName = worldName;
-        this.category = category;
         this.owner = owner;
         this.ownerName = ownerName;
         this.access = access;
         this.currency = currency;
         this.teleportPrice = teleportPrice;
         this.earnedMoney = earnedMoney;
-        this.icon = icon;
+        setIcon(icon);
         if (id != null) setId(id);
     }
 
@@ -148,15 +146,6 @@ public class Warp {
         this.description = newDesc.isBlank() ? null : newDesc;
     }
 
-    @Nullable
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(@Nullable Category category) {
-        this.category = category;
-    }
-
     public long getCreated() {
         return created;
     }
@@ -206,15 +195,32 @@ public class Warp {
         this.earnedMoney = earnedMoney;
     }
 
-    public Material getIcon() {
+    public ItemStack getIcon() {
         if (icon == null) {
-            return Material.matchMaterial(CONFIG.getString("default-material", "PLAYER_HEAD"));
+            Material material = Material.matchMaterial(CONFIG.getString("default-material", "PLAYER_HEAD"));
+            if (material == null || material.isAir()) material = Material.PLAYER_HEAD;
+            return new ItemStack(material);
         }
-        return icon;
+        return icon.clone();
     }
 
-    public void setIcon(Material icon) {
-        this.icon = icon;
+    @Nullable
+    public ItemStack getRealIcon() {
+        return icon == null ? null : icon.clone();
+    }
+
+    public Material getIconMaterial() {
+        return getIcon().getType();
+    }
+
+    public void setIcon(@Nullable ItemStack icon) {
+        if (icon == null) {
+            this.icon = null;
+            return;
+        }
+        ItemStack copy = icon.clone();
+        copy.setAmount(1);
+        this.icon = copy;
     }
 
     public String getOwnerName() {
@@ -316,7 +322,7 @@ public class Warp {
     public void teleportPlayer(Player player) {
         validateTeleport(player, false, bool -> {
             if (!bool) return;
-            if (player.hasPermission("axplayerwarps.delay-bypass")) {
+            if (player.hasPermission("axplayerwarps.warmup.bypass") || player.hasPermission("axplayerwarps.delay-bypass")) {
                 completeTeleportPlayer(player);
                 return;
             }
@@ -457,6 +463,8 @@ public class Warp {
         AxPlayerWarpsDeleteEvent deleteEvent = new AxPlayerWarpsDeleteEvent(player, this);
         Bukkit.getServer().getPluginManager().callEvent(deleteEvent);
         if (deleteEvent.isCancelled()) return;
+
+        WarpQueue.removeByWarp(this);
 
         AxPlayerWarps.getThreadedQueue().submit(() -> {
             MESSAGEUTILS.sendLang(player, "delete.deleted", Map.of("%warp%", getName()));

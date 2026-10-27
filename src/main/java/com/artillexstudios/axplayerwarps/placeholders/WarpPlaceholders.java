@@ -32,14 +32,12 @@ import static com.artillexstudios.axplayerwarps.AxPlayerWarps.LANG;
 public class WarpPlaceholders {
     private static final PlaceholderArgument<Warp> warpArg = new PlaceholderArgument<>("warp", WarpResolver.class);
     public static final DecimalFormat df = new DecimalFormat("#.##");
-    private static String noCategory;
 
     public static String format(Object obj) {
         return df.format(obj);
     }
 
     public static void reload() {
-        noCategory = LANG.getString("placeholders.no-category");
     }
 
     public static void load() {
@@ -161,16 +159,6 @@ public class WarpPlaceholders {
             return format(warp.getLocation().getPitch());
         });
 
-        registerWarp("category", handler -> {
-            Warp warp = getWarp(handler);
-            if (warp == null) return empty;
-            if (warp.getCategory() == null) {
-                return noCategory;
-            } else {
-                return CONFIG.getString("categories." + warp.getCategory().raw() + ".name", warp.getCategory().raw());
-            }
-        });
-
         registerWarp("price", handler -> {
             Warp warp = getWarp(handler);
             if (warp == null) return empty;
@@ -245,7 +233,7 @@ public class WarpPlaceholders {
         registerWarp("icon", handler -> {
             Warp warp = getWarp(handler);
             if (warp == null) return empty;
-            return warp.getIcon().name().toLowerCase();
+            return warp.getIconMaterial().name().toLowerCase();
         });
 
         registerWarp("blacklisted", handler -> {

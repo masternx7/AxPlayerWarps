@@ -49,6 +49,8 @@ public class RateWarpGui extends GuiFrame<Gui> {
             .create();
 
         addReplacement(new Replacements("%warp%", warp.getName()));
+        addReplacement(new Replacements("%name%", warp.getName()));
+        addReplacement(new Replacements("%player%", player.getName()));
         addPlaceholderParameter(warp);
 
         setGui(gui, () -> parseText(GUI.getString("title", "")));
@@ -111,6 +113,7 @@ public class RateWarpGui extends GuiFrame<Gui> {
             }
         });
 
+        updateTitle();
         gui.update();
         gui.open(player);
     }

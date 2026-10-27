@@ -1,6 +1,8 @@
 # DOCUMENTATION: https://docs.artillex-studios.com/axplayerwarps.html
 # ITEM BUILDER: https://docs.artillex-studios.com/item-builder.html
 
+# title supports PlaceholderAPI placeholders and built-in placeholders:
+# %player%, %warp%, %name%
 title: "&0&lAxPWarps > &8Editing %warp%"
 # a gui can have 1-6 rows
 rows: 5

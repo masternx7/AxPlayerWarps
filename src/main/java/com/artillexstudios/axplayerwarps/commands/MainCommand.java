@@ -6,6 +6,7 @@ import com.artillexstudios.axplayerwarps.commands.subcommands.Create;
 import com.artillexstudios.axplayerwarps.commands.subcommands.Delete;
 import com.artillexstudios.axplayerwarps.commands.subcommands.Edit;
 import com.artillexstudios.axplayerwarps.commands.subcommands.Help;
+import com.artillexstudios.axplayerwarps.commands.subcommands.Icon;
 import com.artillexstudios.axplayerwarps.commands.subcommands.Info;
 import com.artillexstudios.axplayerwarps.commands.subcommands.Open;
 import com.artillexstudios.axplayerwarps.warps.Warp;
@@ -66,5 +67,11 @@ public class MainCommand implements OrphanCommand {
     @CommandPermission("axplayerwarps.info")
     public void info(@NotNull CommandSender sender, @AllWarps Warp warp) {
         Info.INSTANCE.execute(sender, warp);
+    }
+
+    @Subcommand({"icon"})
+    @CommandPermission("axplayerwarps.icon")
+    public void icon(@NotNull Player sender, String action, @OwnWarps Warp warp) {
+        Icon.INSTANCE.execute(sender, action, warp);
     }
 }

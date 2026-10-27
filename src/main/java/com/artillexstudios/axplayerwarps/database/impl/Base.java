@@ -1,8 +1,7 @@
 package com.artillexstudios.axplayerwarps.database.impl;
 
+import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.Pair;
-import com.artillexstudios.axplayerwarps.category.Category;
-import com.artillexstudios.axplayerwarps.category.CategoryManager;
 import com.artillexstudios.axplayerwarps.database.Database;
 import com.artillexstudios.axplayerwarps.enums.Access;
 import com.artillexstudios.axplayerwarps.enums.AccessList;
@@ -18,9 +17,11 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -84,8 +85,8 @@ public class Base implements Database {
                 	pitch FLOAT NOT NULL,
                 	name VARCHAR(1024) NOT NULL,
                 	description TEXT DEFAULT null,
-                	category_id INT DEFAULT null,
                 	icon_id INT DEFAULT null,
+	icon TEXT DEFAULT null,
                 	created BIGINT NOT NULL,
                     currency_id INT DEFAULT null,
                     price DOUBLE NOT NULL DEFAULT '0',
@@ -113,15 +114,6 @@ public class Base implements Database {
                 	stars TINYINT NOT NULL,
                 	date BIGINT,
                 	PRIMARY KEY (id)
-                );
-        """);
-
-        execute("""
-                CREATE TABLE IF NOT EXISTS axplayerwarps_categories (
-                	id INT NOT NULL AUTO_INCREMENT,
-                	category VARCHAR(512) NOT NULL,
-                	PRIMARY KEY (id),
-                	UNIQUE (category)
                 );
         """);
 
@@ -163,6 +155,30 @@ public class Base implements Database {
                 	PRIMARY KEY (id)
                 );
         """);
+
+        ensureColumn("axplayerwarps_warps", "icon", "TEXT DEFAULT null");
+    }
+
+    private void ensureColumn(String table, String column, String definition) {
+        try (Connection conn = getConnection()) {
+            if (conn == null) return;
+            DatabaseMetaData meta = conn.getMetaData();
+            if (columnExists(meta, table, column)) return;
+            execute("ALTER TABLE " + table + " ADD COLUMN " + column + " " + definition);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private boolean columnExists(DatabaseMetaData meta, String table, String column) throws SQLException {
+        for (String tableName : new String[]{table, table.toUpperCase(), table.toLowerCase()}) {
+            try (ResultSet rs = meta.getColumns(null, null, tableName, null)) {
+                while (rs.next()) {
+                    if (rs.getString("COLUMN_NAME").equalsIgnoreCase(column)) return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -353,41 +369,6 @@ public class Base implements Database {
     }
 
     @Override
-    public int getCategoryId(String category) {
-        ThreadUtils.checkNotMain("This method can only be called async!");
-        try (Connection conn = getConnection(); PreparedStatement stmt = createStatement(conn,
-                "SELECT id FROM axplayerwarps_categories WHERE category = ?",
-                category)
-        ) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
-                else {
-                    return insert("INSERT INTO axplayerwarps_categories (category) VALUES (?)", category);
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        throw new RuntimeException("Category not found!");
-    }
-
-    @Nullable
-    public Category getCategoryFromId(int id) {
-        ThreadUtils.checkNotMain("This method can only be called async!");
-        try (Connection conn = getConnection(); PreparedStatement stmt = createStatement(conn,
-                "SELECT category FROM axplayerwarps_categories WHERE id = ?",
-                id)
-        ) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return CategoryManager.getCategories().get(rs.getString(1));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
     public int getCurrencyId(String currency) {
         ThreadUtils.checkNotMain("This method can only be called async!");
         try (Connection conn = getConnection(); PreparedStatement stmt = createStatement(conn,
@@ -481,6 +462,28 @@ public class Base implements Database {
                 System.currentTimeMillis());
     }
 
+    @Nullable
+    private String serializeIcon(@Nullable ItemStack icon) {
+        if (icon == null) return null;
+        try {
+            return Serializers.ITEM_STACK.serialize(icon);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Nullable
+    private ItemStack deserializeIcon(@Nullable String icon) {
+        if (icon == null || icon.isBlank()) return null;
+        try {
+            return Serializers.ITEM_STACK.deserialize(icon);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     public void updateWarp(Warp warp) {
         ThreadUtils.checkNotMain("This method can only be called async!");
@@ -495,8 +498,7 @@ public class Base implements Database {
                 pitch = ?,
                 name = ?,
                 description = ?,
-                category_id = ?,
-                icon_id = ?,
+                icon = ?,
                 currency_id = ?,
                 price = ?,
                 earned_money = ?,
@@ -512,8 +514,7 @@ public class Base implements Database {
                 warp.getLocation().getPitch(),
                 warp.getName(),
                 warp.getDescription(),
-                warp.getCategory() == null ? null : getCategoryId(warp.getCategory().raw()),
-                warp.getIcon() == null ? null : getMaterialId(warp.getIcon()),
+                serializeIcon(warp.getRealIcon()),
                 warp.getCurrency() == null ? null : getCurrencyId(warp.getCurrencyIntegration().getName()),
                 warp.getTeleportPrice(),
                 warp.getEarnedMoney(),
@@ -900,19 +901,15 @@ public class Base implements Database {
                             rs.getFloat("pitch")
                     );
 
-                    Category category = null;
-                    if (rs.getString("category_id") != null) {
-                        category = getCategoryFromId(rs.getInt("category_id"));
-                    }
-
                     String currency = null;
                     if (rs.getString("currency_id") != null) {
                         currency = getCurrencyFromId(rs.getInt("currency_id"));
                     }
 
-                    Material material = null;
-                    if (rs.getString("icon_id") != null) {
-                        material = getMaterialFromId(rs.getInt("icon_id"));
+                    ItemStack icon = deserializeIcon(rs.getString("icon"));
+                    if (icon == null && rs.getString("icon_id") != null) {
+                        Material material = getMaterialFromId(rs.getInt("icon_id"));
+                        if (material != null && !material.isAir()) icon = new ItemStack(material);
                     }
 
                     Pair<UUID, String> player = getUUIDAndNameFromId(rs.getInt("owner_id"));
@@ -925,14 +922,13 @@ public class Base implements Database {
                             rs.getString("name"),
                             loc,
                             world,
-                            category,
                             player.getKey(),
                             player.getValue(),
                             Access.values()[rs.getInt("access")],
                             currency,
                             rs.getDouble("price"),
                             rs.getDouble("earned_money"),
-                            material
+                            icon
                     );
 
                     WarpManager.getWarps().add(warp);

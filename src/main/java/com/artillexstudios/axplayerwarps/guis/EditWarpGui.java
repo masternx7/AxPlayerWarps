@@ -18,8 +18,6 @@ import com.artillexstudios.axguiframework.libs.gui.guis.Gui;
 import com.artillexstudios.axguiframework.replacements.Replacements;
 import com.artillexstudios.axintegrations.types.CurrencyIntegration;
 import com.artillexstudios.axplayerwarps.AxPlayerWarps;
-import com.artillexstudios.axplayerwarps.category.Category;
-import com.artillexstudios.axplayerwarps.category.CategoryManager;
 import com.artillexstudios.axplayerwarps.enums.Access;
 import com.artillexstudios.axplayerwarps.enums.AccessList;
 import com.artillexstudios.axplayerwarps.input.InputManager;
@@ -67,6 +65,8 @@ public class EditWarpGui extends GuiFrame<Gui> {
                 .create();
 
         addReplacement(new Replacements("%warp%", warp.getName()));
+        addReplacement(new Replacements("%name%", warp.getName()));
+        addReplacement(new Replacements("%player%", player.getName()));
         addPlaceholderParameter(warp);
 
         setGui(gui, () -> parseText(GUI.getString("title", "")));
@@ -74,7 +74,7 @@ public class EditWarpGui extends GuiFrame<Gui> {
 
         gui.setPlayerInventoryAction(event -> {
             if (event.getCurrentItem() == null) return;
-            warp.setIcon(event.getCurrentItem().getType());
+            warp.setIcon(event.getCurrentItem());
             AxPlayerWarps.getThreadedQueue().submit(() -> {
                 AxPlayerWarps.getDatabase().updateWarp(warp);
                 MESSAGEUTILS.sendLang(player, "editor.update-icon");
@@ -84,7 +84,12 @@ public class EditWarpGui extends GuiFrame<Gui> {
     }
 
     public static boolean reload() {
-        return GUI.reload();
+        if (!GUI.reload()) return false;
+        if (GUI.getSection("category") != null) {
+            GUI.remove("category");
+            GUI.save();
+        }
+        return true;
     }
 
     public void open() {
@@ -134,8 +139,16 @@ public class EditWarpGui extends GuiFrame<Gui> {
         });
 
         ItemStack mt = guiItem.getItemStack();
-        if (warp.getIcon() != null) mt.setType(warp.getIcon());
-        guiItem.setItemStack(mt);
+        WrappedItemStack display = WrappedItemStack.wrap(mt);
+        var displayName = display.get(DataComponents.CUSTOM_NAME);
+        var displayLore = display.get(DataComponents.LORE);
+        ItemStack icon = warp.getIcon();
+        WrappedItemStack.edit(icon, target -> {
+            if (displayName != null) target.set(DataComponents.CUSTOM_NAME, displayName);
+            if (displayLore != null) target.set(DataComponents.LORE, displayLore);
+            return null;
+        });
+        guiItem.setItemStack(icon);
 
         createItem("location", event -> {
             GuiActions.run(player, this, event, section.getStringList("location.actions"));
@@ -210,28 +223,6 @@ public class EditWarpGui extends GuiFrame<Gui> {
                 }
             }
             warp.setAccess(accesses.get(idx));
-            AxPlayerWarps.getThreadedQueue().submit(() -> AxPlayerWarps.getDatabase().updateWarp(warp));
-            open();
-        });
-
-        createItem("category", event -> {
-            GuiActions.run(player, this, event, section.getStringList("category.actions"));
-            Category category = warp.getCategory();
-            ArrayList<Category> categories = new ArrayList<>(CategoryManager.getCategories().values());
-            int idx = category == null ? -1 : categories.indexOf(category);
-            if (event.isLeftClick()) {
-                idx++;
-                if (idx >= categories.size()) idx = 0;
-            } else if (event.isRightClick()) {
-                if (idx == -1) idx = 0;
-                if (event.isShiftClick()) {
-                    idx = -1;
-                } else {
-                    idx--;
-                    if (idx < 0) idx = categories.size() - 1;
-                }
-            }
-            warp.setCategory(idx == -1 ? null : categories.get(idx));
             AxPlayerWarps.getThreadedQueue().submit(() -> AxPlayerWarps.getDatabase().updateWarp(warp));
             open();
         });
@@ -361,6 +352,7 @@ public class EditWarpGui extends GuiFrame<Gui> {
             new BlacklistGui(player, warp).open();
         });
 
+        updateTitle();
         gui.update();
         gui.open(player);
     }

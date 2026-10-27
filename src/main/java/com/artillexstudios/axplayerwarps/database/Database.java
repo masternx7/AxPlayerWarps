@@ -1,7 +1,6 @@
 package com.artillexstudios.axplayerwarps.database;
 
 import com.artillexstudios.axapi.utils.Pair;
-import com.artillexstudios.axplayerwarps.category.Category;
 import com.artillexstudios.axplayerwarps.database.impl.Base;
 import com.artillexstudios.axplayerwarps.enums.AccessList;
 import com.artillexstudios.axplayerwarps.warps.Warp;
@@ -43,10 +42,6 @@ public interface Database {
     Pair<UUID, String> getUUIDAndNameFromId(int id);
 
     String getWorldFromId(int id);
-
-    int getCategoryId(String category);
-
-    Category getCategoryFromId(int id);
 
     int getCurrencyId(String currency);
 

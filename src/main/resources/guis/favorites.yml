@@ -1,6 +1,8 @@
 # DOCUMENTATION: https://docs.artillex-studios.com/axplayerwarps.html
 # ITEM BUILDER: https://docs.artillex-studios.com/item-builder.html
 
+# title supports PlaceholderAPI placeholders and built-in placeholders:
+# %player%, %page%, %current_page%, %max_page%, %pages%
 title: "&0&lAxPWarps > &8My Favorites (%page%/%pages%)"
 # a gui can have 1-6 rows
 rows: 5
@@ -24,7 +26,6 @@ warp:
     - "  &#444444❙ &#BBFFDDOwner: &f%owner%"
     - "  &#444444❙ &#BBFFDDCreated: &f%created%"
     - "  &#444444❙ &#BBFFDDLocation: &f%world%, %x%, %y%, %z%"
-    - "  &#444444❙ &#BBFFDDCategory: &f%category%"
     - " "
     - "&#33EEBBStatistics"
     - "  &#444444❙ &#BBFFDDVisits: &f%visitors_unique%"

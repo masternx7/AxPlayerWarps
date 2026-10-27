@@ -1,5 +1,6 @@
 package com.artillexstudios.axplayerwarps.commands.subcommands;
 
+import com.artillexstudios.axguiframework.GuiManager;
 import com.artillexstudios.axguiframework.actions.impl.ActionMenu;
 import com.artillexstudios.axplayerwarps.warps.Warp;
 import org.bukkit.command.CommandSender;
@@ -33,6 +34,10 @@ public enum Open {
             }
         }
 
-        new ActionMenu().run(openTo, null, null, CONFIG.getString("default-gui", "categories"));
+        String defaultGui = CONFIG.getString("default-gui", "warps");
+        if (defaultGui.equalsIgnoreCase("categories") || !GuiManager.getGuiTypes().containsKey(defaultGui)) {
+            defaultGui = "warps";
+        }
+        new ActionMenu().run(openTo, null, null, defaultGui);
     }
 }

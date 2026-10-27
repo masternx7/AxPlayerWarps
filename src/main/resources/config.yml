@@ -104,7 +104,8 @@ confirmation-milliseconds: 10000
 
 # how many seconds before the player gets teleported?
 # if they move, the teleport will be cancelled
-# you can bypass this with the axplayerwarps.delay-bypass permission
+# you can bypass this warmup with the axplayerwarps.warmup.bypass permission
+# (axplayerwarps.delay-bypass is kept as a legacy alias)
 teleport-delay-seconds: 3
 
 warp-description:
@@ -114,9 +115,9 @@ warp-description:
   max-line-length: 50
   default: "No description provided."
 
-# example values: categories, warps
-# if you want to disable categories, make sure to change this to warps
-default-gui: "categories"
+# which gui should open when using /axpw without arguments?
+# example values: warps, my-warps, favorites, recents
+default-gui: "warps"
 
 # commands that will be run when a player teleports to a warp
 # you can use all warp placeholders (like %name%, %x%, %y%, %x%, etc..) and %player% for the player's name
@@ -124,28 +125,6 @@ default-gui: "categories"
 # - "say %player% teleported to the %name% player warp!"
 # make sure to remove the [] to enable this feature
 teleport-commands: []
-
-# to disable categories you can set this to []
-# also make sure to remove the category selector from the gui
-#
-# you can add/remove categories here
-categories:
-  building:
-    name: "Building"
-  shop:
-    name: "Shop"
-  farm:
-    name: "Farm"
-  pvp:
-    name: "PvP"
-  event:
-    name: "Event"
-  fun:
-    name: "Fun"
-  special:
-    name: "Special"
-  other:
-    name: "Other"
 
 # this is all the possible sorting that you can enable/disable
 # forwards: it goes in the original direction, for example forwards rating = it will go from the highest rating to the lowest rating
@@ -228,4 +207,4 @@ update-notifier:
 debug: false
 
 # do not change this
-version: 9
+version: 10

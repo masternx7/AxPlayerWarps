@@ -18,7 +18,7 @@ public class WarpQueue {
 
     public static void start() {
         Scheduler.get().runTimer(() -> {
-            long time = CONFIG.getLong("teleport-delay-seconds");
+            long time = Math.max(0, CONFIG.getLong("teleport-delay-seconds", 3));
             try {
                 for (Iterator<Map.Entry<Player, TeleportData>> it = queue.entrySet().iterator(); it.hasNext(); ) {
                     Map.Entry<Player, TeleportData> e = it.next();
@@ -60,5 +60,9 @@ public class WarpQueue {
 
     public static void remove(Player player) {
         queue.remove(player);
+    }
+
+    public static void removeByWarp(Warp warp) {
+        queue.entrySet().removeIf(entry -> entry.getValue().warp().equals(warp));
     }
 }

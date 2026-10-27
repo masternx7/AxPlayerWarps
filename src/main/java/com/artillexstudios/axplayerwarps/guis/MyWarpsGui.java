@@ -15,7 +15,6 @@ import com.artillexstudios.axguiframework.item.AxGuiItem;
 import com.artillexstudios.axguiframework.libs.gui.guis.Gui;
 import com.artillexstudios.axguiframework.replacements.Replacements;
 import com.artillexstudios.axplayerwarps.AxPlayerWarps;
-import com.artillexstudios.axplayerwarps.category.Category;
 import com.artillexstudios.axplayerwarps.input.InputManager;
 import com.artillexstudios.axplayerwarps.sorting.WarpComparator;
 import com.artillexstudios.axplayerwarps.user.Users;
@@ -27,13 +26,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.CONFIG;
@@ -49,15 +46,8 @@ public class MyWarpsGui extends PaginatedGuiFrame {
             UpdaterSettings.builder().build()
     );
 
-    private Category category = null;
     private String search = null;
     private final WarpUser user;
-
-    public MyWarpsGui(Player player, Category category, @Nullable String search) {
-        this(player);
-        this.category = category;
-        this.search = search;
-    }
 
     public MyWarpsGui(Player player) {
         super(GUI.getInt("auto-update-ticks", -1), GUI, player);
@@ -74,15 +64,28 @@ public class MyWarpsGui extends PaginatedGuiFrame {
         addReplacement(new Replacements("%current_page%", () -> String.valueOf(gui.getCurrentPageNum())));
         addReplacement(new Replacements("%max_page%", () -> String.valueOf(gui.getPagesNum())));
         addReplacement(new Replacements("%pages%", () -> String.valueOf(gui.getPagesNum())));
+        addReplacement(new Replacements("%player%", player.getName()));
         addReplacement(new Replacements("%search%", () -> search == null ? LANG.getString("placeholders.no-search") : search));
-        addReplacement(new Replacements("%category_selected%", () -> category == null ? LANG.getString("placeholders.no-category") : category.formatted()));
 
         setGui(gui, () -> parseText(GUI.getString("title", "")));
         user.addGui(this);
     }
 
     public static boolean reload() {
-        return GUI.reload();
+        if (!GUI.reload()) return false;
+
+        boolean changed = false;
+        if (GUI.getSection("category") != null) {
+            GUI.remove("category");
+            changed = true;
+        }
+        List<String> lore = GUI.getStringList("warp.lore");
+        if (lore.removeIf(line -> line.contains("%category%"))) {
+            GUI.set("warp.lore", lore);
+            changed = true;
+        }
+        if (changed) GUI.save();
+        return true;
     }
 
     public void open() {
@@ -120,20 +123,6 @@ public class MyWarpsGui extends PaginatedGuiFrame {
             open(gui.getCurrentPageNum());
         });
 
-        createItem("category", event -> {
-            GuiActions.run(player, this, event, section.getStringList("category.actions"));
-            if (event.isShiftClick()) {
-                user.resetCategory();
-                category = null;
-                open(gui.getCurrentPageNum());
-                return;
-            }
-            if (event.isLeftClick()) user.changeCategory(1);
-            if (event.isRightClick()) user.changeCategory(-1);
-            category = user.getCategory();
-            open(gui.getCurrentPageNum());
-        });
-
         loadWarps().thenRun(() -> {
             gui.open(player, page);
         });
@@ -158,8 +147,6 @@ public class MyWarpsGui extends PaginatedGuiFrame {
             List<CompletableFuture<?>> futures = new ArrayList<>();
             int i = 0;
             for (Warp warp : filtered) {
-                // category
-                if (category != null && !Objects.equals(warp.getCategory(), category)) continue;
                 // search
                 if (search != null && (!warp.getName().toLowerCase().contains(search) && !warp.getOwnerName().toLowerCase().contains(search))) continue;
 
@@ -168,8 +155,8 @@ public class MyWarpsGui extends PaginatedGuiFrame {
 
                 int i2 = i;
                 AsyncUtils.submit(() -> {
-                    Material icon = warp.getIcon();
-                    ItemBuilder builder = ItemBuilder.create(new ItemStack(icon));
+                    ItemStack icon = warp.getIcon();
+                    ItemBuilder builder = ItemBuilder.create(icon);
                     builder.setName(parseText(GUI.getString("warp.name"), warp));
 
                     String[] description = warp.getDescription().split("\n", CONFIG.getInt("warp-description.max-lines", 3));
@@ -187,7 +174,7 @@ public class MyWarpsGui extends PaginatedGuiFrame {
                         }
                     }
                     builder.setLore(parseText(lore, warp));
-                    if (icon == Material.PLAYER_HEAD) {
+                    if (warp.getRealIcon() == null && icon.getType() == Material.PLAYER_HEAD) {
                         Player pl = Bukkit.getPlayer(warp.getOwner());
                         if (pl != null) {
                             ServerPlayerWrapper wrapper = ServerPlayerWrapper.wrap(pl);

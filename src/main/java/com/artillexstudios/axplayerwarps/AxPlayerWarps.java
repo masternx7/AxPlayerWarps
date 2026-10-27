@@ -17,14 +17,12 @@ import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
 import com.artillexstudios.axapi.utils.logging.LoggerNameFormat;
 import com.artillexstudios.axguiframework.GuiManager;
 import com.artillexstudios.axguiframework.GuiUpdater;
-import com.artillexstudios.axplayerwarps.category.CategoryManager;
 import com.artillexstudios.axplayerwarps.commands.CommandManager;
 import com.artillexstudios.axplayerwarps.database.Database;
 import com.artillexstudios.axplayerwarps.database.impl.H2;
 import com.artillexstudios.axplayerwarps.database.impl.MySQL;
 import com.artillexstudios.axplayerwarps.database.impl.PostgreSQL;
 import com.artillexstudios.axplayerwarps.guis.BlacklistGui;
-import com.artillexstudios.axplayerwarps.guis.CategoryGui;
 import com.artillexstudios.axplayerwarps.guis.EditWarpGui;
 import com.artillexstudios.axplayerwarps.guis.FavoritesGui;
 import com.artillexstudios.axplayerwarps.guis.MyWarpsGui;
@@ -96,8 +94,6 @@ public final class AxPlayerWarps extends AxPlugin {
 
         MESSAGEUTILS = new MessageUtils(LANG.getBackingDocument(), "prefix", CONFIG.getBackingDocument());
 
-        CategoryGui.reload();
-        GuiManager.registerGuiType("categories", CategoryGui.class);
         WarpsGui.reload();
         GuiManager.registerGuiType("warps", WarpsGui.class);
         RateWarpGui.reload();
@@ -125,7 +121,6 @@ public final class AxPlayerWarps extends AxPlugin {
         HookManager.setupHooks();
 
         WorldManager.reload();
-        CategoryManager.reload();
         SortingManager.reload();
 
         CommandManager.load();

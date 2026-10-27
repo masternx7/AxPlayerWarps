@@ -67,6 +67,8 @@ public class BlacklistGui extends PaginatedGuiFrame {
         addReplacement(new Replacements("%max_page%", () -> String.valueOf(gui.getPagesNum())));
         addReplacement(new Replacements("%pages%", () -> String.valueOf(gui.getPagesNum())));
         addReplacement(new Replacements("%warp%", warp.getName()));
+        addReplacement(new Replacements("%name%", warp.getName()));
+        addReplacement(new Replacements("%player%", player.getName()));
         addPlaceholderParameter(warp);
 
         setGui(gui, () -> parseText(GUI.getString("title", "")));

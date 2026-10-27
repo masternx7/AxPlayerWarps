@@ -10,6 +10,8 @@ help:
   - " <#33CCBB>➤ <white>/axpw warp <warp> <#DDDDDD>| <#BBFFDD>Teleport to warp"
   - " <#33CCBB>➤ <white>/axpw info <warp> <#DDDDDD>| <#BBFFDD>Warp information"
   - " <#33CCBB>➤ <white>/axpw set <warp> <#DDDDDD>| <#BBFFDD>Update warp location"
+  - " <#33CCBB>➤ <white>/axpw icon set <warp> <#DDDDDD>| <#BBFFDD>Set warp icon from held item"
+  - " <#33CCBB>➤ <white>/axpw icon remove <warp> <#DDDDDD>| <#BBFFDD>Reset warp icon"
   - " <#33CCBB>➤ <white>/axpw settings <warp> <#DDDDDD>| <#BBFFDD>Open warp settings"
   - " <#33CCBB>➤ <#44CCBB>/axpwadmin <#DDDDDD>| <#BBFFDD>Admin commands"
   - " "
@@ -29,7 +31,6 @@ access:
   public: "&#00EE00Public"
 
 placeholders:
-  no-category: "---"
   free: "Free"
   no-rating: "No Rating"
   star:
@@ -48,7 +49,6 @@ info:
   - "   &#444444❙ &#BBFFDDOwner: &f%owner%"
   - "   &#444444❙ &#BBFFDDCreated: &f%created%"
   - "   &#444444❙ &#BBFFDDLocation: &f%world%, %x%, %y%, %z%"
-  - "   &#444444❙ &#BBFFDDCategory: &f%category%"
   - " "
   - " &#33EEBBStatistics"
   - "   &#444444❙ &#BBFFDDVisits: &f%visitors_unique%"
@@ -125,6 +125,7 @@ errors:
   not-a-number: "&#FF4444The given value is not a valid number!"
   must-be-positive: "&#FF4444The given value is not a positive number!"
   invalid-name: "&#FF4444The given name is not valid."
+  no-item-in-hand: "&#FF4444You must hold an item in your main hand!"
   name-exists: "&#FF4444A warp with this name already exists."
   max-lines: "&#FF4444You can not add more lines to the warp's description!"
   max-length: "&#FF4444The length of warp description lines can't be more than %length% characters!"
@@ -169,4 +170,4 @@ commands:
 update-notifier: "&#88CCFFThere is a new version of AxPlayerWarps available! &#DDDDDD(&#FFFFFFcurrent: &#FF0000%current% &#DDDDDD| &#FFFFFFlatest: &#00FF00%latest%&#DDDDDD)"
 
 # do not change this
-version: 7
+version: 8
