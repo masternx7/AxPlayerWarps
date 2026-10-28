@@ -1,5 +1,6 @@
 package com.artillexstudios.axplayerwarps.input;
 
+import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axplayerwarps.warps.Warp;
@@ -26,6 +27,7 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static com.artillexstudios.axplayerwarps.AxPlayerWarps.INPUT;
 import static com.artillexstudios.axplayerwarps.AxPlayerWarps.LANG;
 
 /**
@@ -50,21 +52,28 @@ public final class DialogSelect {
 
         List<Warp> options = new ArrayList<>(warps);
         if (options.isEmpty()) {
-            player.sendMessage(StringUtils.formatToString(LANG.getString("errors.no-warps", "&#FF4444You don't have any warps yet!")));
+            player.sendMessage(StringUtils.formatToString(LANG.getString("errors.no-warps")));
             return;
         }
 
         options.sort(Comparator.comparing(Warp::getName, String.CASE_INSENSITIVE_ORDER));
-        List<String> labels = options.stream().map(warp -> "&f" + warp.getName()).toList();
+        Section section = INPUT.getSection("select.warp");
+        String entryFormat = section == null ? "%warp%" : section.getString("entry", "%warp%");
+        List<String> labels = options.stream()
+                .map(warp -> entryFormat.replace("%warp%", warp.getName()))
+                .toList();
 
-        select(player, "&#33EEBB&lSelect Warp", "Choose one of your warps below.", "Warp", labels, index -> callback.accept(options.get(index)));
+        select(player, section, labels, index -> callback.accept(options.get(index)));
     }
 
-    public static <T> void option(Player player, String title, String label, List<T> values, Function<T, String> displayName, Consumer<T> callback) {
+    public static <T> void option(Player player, String route, List<T> values, Function<T, String> displayName, Consumer<T> callback) {
         if (values.isEmpty()) return;
 
+        Section section = INPUT.getSection("select." + route);
+        if (section == null) section = INPUT.getSection("select.action");
+
         List<String> labels = values.stream().map(displayName).toList();
-        select(player, title, "Choose an option below.", label, labels, index -> callback.accept(values.get(index)));
+        select(player, section, labels, index -> callback.accept(values.get(index)));
     }
 
     public static String prettify(Enum<?> value) {
@@ -72,7 +81,7 @@ public final class DialogSelect {
         return "&f" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
 
-    private static void select(Player player, String title, String bodyText, String label, List<String> labels, Consumer<Integer> callback) {
+    private static void select(Player player, @Nullable Section section, List<String> labels, Consumer<Integer> callback) {
         List<SingleOptionDialogInput.OptionEntry> entries = new ArrayList<>(labels.size());
         for (int i = 0; i < labels.size(); i++) {
             entries.add(SingleOptionDialogInput.OptionEntry.create(
@@ -82,13 +91,25 @@ public final class DialogSelect {
             ));
         }
 
+        String title = section == null ? "" : section.getString("title", "");
+        String label = section == null ? "" : section.getString("label", "");
+        List<DialogBody> body = new ArrayList<>();
+        if (section != null) {
+            for (String line : section.getStringList("body")) {
+                body.add(DialogBody.plainMessage(StringUtils.format(line)));
+            }
+        }
+
         DialogInput input = DialogInput.singleOption(KEY, StringUtils.format(label), entries)
                 .width(250)
                 .build();
 
+        Section buttons = INPUT.getSection("select.buttons");
+        String confirmLabel = buttons == null ? "" : buttons.getString("confirm.label", "");
+        String confirmTooltip = buttons == null ? "" : buttons.getString("confirm.tooltip", "");
         ActionButton confirm = ActionButton.create(
-                StringUtils.format("&aSelect"),
-                Component.empty(),
+                StringUtils.format(confirmLabel),
+                confirmTooltip.isBlank() ? Component.empty() : StringUtils.format(confirmTooltip),
                 100,
                 DialogAction.customClick((view, audience) -> {
                     if (!(audience instanceof Player player1)) return;
@@ -98,16 +119,18 @@ public final class DialogSelect {
                 }, ClickCallback.Options.builder().uses(1).build())
         );
 
+        String cancelLabel = buttons == null ? "" : buttons.getString("cancel.label", "");
+        String cancelTooltip = buttons == null ? "" : buttons.getString("cancel.tooltip", "");
         ActionButton cancel = ActionButton.create(
-                StringUtils.format("&cCancel"),
-                Component.empty(),
+                StringUtils.format(cancelLabel),
+                cancelTooltip.isBlank() ? Component.empty() : StringUtils.format(cancelTooltip),
                 100,
                 DialogAction.customClick((view, audience) -> {}, ClickCallback.Options.builder().uses(1).build())
         );
 
         Dialog dialog = Dialog.create(builder -> builder.empty()
                 .base(DialogBase.builder(StringUtils.format(title))
-                        .body(List.of(DialogBody.plainMessage(StringUtils.format(bodyText))))
+                        .body(body)
                         .inputs(List.of(input))
                         .canCloseWithEscape(true)
                         .build())

@@ -89,7 +89,7 @@ public class MainCommand implements OrphanCommand {
                 setDescription(sender, selected, action, text);
                 return;
             }
-            DialogSelect.option(sender, "&#33EEBB&lSelect Action", "Action", List.of(DescriptionAction.values()),
+            DialogSelect.option(sender, "action", List.of(DescriptionAction.values()),
                     DialogSelect::prettify, selectedAction -> setDescription(sender, selected, selectedAction, text));
         });
     }
@@ -103,7 +103,7 @@ public class MainCommand implements OrphanCommand {
                 return;
             }
             List<Access> values = List.of(Access.values());
-            DialogSelect.option(sender, "&#33EEBB&lSelect Access", "Access", values,
+            DialogSelect.option(sender, "access", values,
                     value -> LANG.getString("access." + value.name().toLowerCase()),
                     value -> WarpSettings.INSTANCE.setAccess(sender, selected, value));
         });
@@ -199,7 +199,7 @@ public class MainCommand implements OrphanCommand {
                 return;
             }
             List<IconAction> values = List.of(IconAction.values());
-            DialogSelect.option(sender, "&#33EEBB&lSelect Action", "Action", values,
+            DialogSelect.option(sender, "action", values,
                     DialogSelect::prettify, selectedAction -> Icon.INSTANCE.execute(sender, selectedAction, selected));
         });
     }
@@ -219,7 +219,7 @@ public class MainCommand implements OrphanCommand {
                 return;
             }
             List<ListAction> values = List.of(ListAction.values());
-            DialogSelect.option(sender, "&#33EEBB&lSelect Action", "Action", values,
+            DialogSelect.option(sender, "action", values,
                     DialogSelect::prettify, selectedAction -> editList(sender, list, selected, selectedAction, target));
         });
     }

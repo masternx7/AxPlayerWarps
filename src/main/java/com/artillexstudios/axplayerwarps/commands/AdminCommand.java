@@ -140,6 +140,6 @@ public class AdminCommand implements OrphanCommand {
     }
 
     private void missing(CommandSender sender, String what) {
-        sender.sendMessage(StringUtils.formatToString("&#FF4444You must specify a " + what + "!"));
+        MESSAGEUTILS.sendLang(sender, "commands.missing-argument", Map.of("%value%", what));
     }
 }

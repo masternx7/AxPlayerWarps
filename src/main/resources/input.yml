@@ -127,5 +127,35 @@ transfer:
     label: "Cancel"
     tooltip: "Keep ownership"
 
+# warp/action/access selector dialogs
+# these are shown when a command argument is omitted
+select:
+  buttons:
+    confirm:
+      label: "&aSelect"
+      tooltip: "Click to select"
+    cancel:
+      label: "&cCancel"
+      tooltip: "Close without selecting"
+
+  warp:
+    title: "&#33EEBB&lSelect Warp"
+    body:
+      - "Choose one of your warps below."
+    label: "Warp"
+    entry: "&f%warp%"
+
+  action:
+    title: "&#33EEBB&lSelect Action"
+    body:
+      - "Choose an option below."
+    label: "Action"
+
+  access:
+    title: "&#33EEBB&lSelect Access"
+    body:
+      - "Choose an access mode below."
+    label: "Access"
+
 # do not change this
-version: 2
+version: 3
