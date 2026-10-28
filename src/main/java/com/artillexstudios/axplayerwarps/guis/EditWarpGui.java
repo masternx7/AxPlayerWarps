@@ -132,7 +132,7 @@ public class EditWarpGui extends PapiGuiFrame<Gui> {
                             AxPlayerWarps.getDatabase().updateWarp(warp);
                             MESSAGEUTILS.sendLang(player, "editor.update-name");
                     }
-                    Scheduler.get().run(() -> open());
+                    Scheduler.get().run(player, task -> open(), () -> {});
                 });
             });
         });
@@ -314,14 +314,14 @@ public class EditWarpGui extends PapiGuiFrame<Gui> {
                     int maxLineLength = CONFIG.getInt("warp-description.max-line-length");
                     if (result.length() > CONFIG.getInt("warp-description.max-line-length")) {
                         MESSAGEUTILS.sendLang(player, "errors.max-length", Map.of("%length%", String.valueOf(maxLineLength)));
-                        Scheduler.get().run(() -> open());
+                        Scheduler.get().run(player, task -> open(), () -> {});
                         return;
                     }
                     desc.add(result);
                     warp.setDescription(desc);
                     AxPlayerWarps.getThreadedQueue().submit(() -> {
                         AxPlayerWarps.getDatabase().updateWarp(warp);
-                        Scheduler.get().run(() -> open());
+                        Scheduler.get().run(player, task -> open(), () -> {});
                     });
                 });
                 return;

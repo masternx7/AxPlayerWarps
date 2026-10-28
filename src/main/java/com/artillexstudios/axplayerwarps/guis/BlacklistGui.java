@@ -86,7 +86,7 @@ public class BlacklistGui extends PapiPaginatedGuiFrame {
                 AxPlayerWarps.getThreadedQueue().submit(() -> {
                     AxPlayerWarps.getDatabase().clearList(warp, accessList);
                     MESSAGEUTILS.sendLang(player, accessList.name().toLowerCase() + ".clear");
-                    open();
+                    Scheduler.get().run(player, task -> open(), () -> {});
                 });
                 return;
             }
@@ -104,7 +104,7 @@ public class BlacklistGui extends PapiPaginatedGuiFrame {
                         AxPlayerWarps.getDatabase().addToList(warp, accessList, Bukkit.getOfflinePlayer(uuid));
                         MESSAGEUTILS.sendLang(player, accessList.name().toLowerCase() + ".add", Map.of("%player%", result));
                     }
-                    Scheduler.get().run(() -> open());
+                    Scheduler.get().run(player, task -> open(), () -> {});
                 });
             });
         });
@@ -145,7 +145,7 @@ public class BlacklistGui extends PapiPaginatedGuiFrame {
                     AxPlayerWarps.getThreadedQueue().submit(() -> {
                         AxPlayerWarps.getDatabase().removeFromList(warp, accessList, accessPlayer.player());
                         MESSAGEUTILS.sendLang(player, accessList.name().toLowerCase() + ".remove", Map.of("%player%", accessPlayer.name()));
-                        open();
+                        Scheduler.get().run(player, task -> open(), () -> {});
                     });
                 }));
             }

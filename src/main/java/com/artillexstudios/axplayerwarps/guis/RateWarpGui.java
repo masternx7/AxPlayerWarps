@@ -77,7 +77,7 @@ public class RateWarpGui extends PapiGuiFrame<Gui> {
                         AxPlayerWarps.getDatabase().addToFavorites(player, warp);
                         MESSAGEUTILS.sendLang(player, "favorite.add", Map.of("%warp%", warp.getName()));
                     }
-                    Scheduler.get().run(() -> open());
+                    Scheduler.get().run(player, task -> open(), () -> {});
                 });
             }, slotOverrides);
         }
@@ -93,7 +93,7 @@ public class RateWarpGui extends PapiGuiFrame<Gui> {
                 AxPlayerWarps.getThreadedQueue().submit(() -> {
                     AxPlayerWarps.getDatabase().removeRating(player, warp);
                     MESSAGEUTILS.sendLang(player, "rate.remove");
-                    Scheduler.get().run(() -> open());
+                    Scheduler.get().run(player, task -> open(), () -> {});
                 });
             }
             if (event.isLeftClick()) {
@@ -107,7 +107,7 @@ public class RateWarpGui extends PapiGuiFrame<Gui> {
                             MESSAGEUTILS.sendLang(player, "rate.add", Map.of("%rating%", "" + i));
                         });
                     }
-                    Scheduler.get().run(() -> open());
+                    Scheduler.get().run(player, task -> open(), () -> {});
                 });
             }
         });
