@@ -1,5 +1,9 @@
 # DOCUMENTATION: https://docs.artillex-studios.com/axplayerwarps.html
 # ITEM BUILDER: https://docs.artillex-studios.com/item-builder.html
+# you can set a custom item model on any item (requires a resource pack)
+# both item_model and item-model are accepted, for example:
+# item_model: "yourpack:custom_item"
+# on the warp item this also overrides the icon's item model
 
 # title supports PlaceholderAPI placeholders and built-in placeholders:
 # %player%, %page%, %current_page%, %max_page%, %pages%
@@ -16,6 +20,9 @@ auto-update-ticks: -1
 # ----- ITEMS -----
 
 warp:
+  # PLAYER_HEAD-%owner% (or PLAYER_HEAD-%player%) shows the warp owner's head
+  # when the warp has no custom icon
+  material: PLAYER_HEAD-%owner%
   name: "&#33EEBB&l%name%"
   lore:
     - " "

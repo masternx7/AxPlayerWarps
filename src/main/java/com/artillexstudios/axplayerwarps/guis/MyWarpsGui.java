@@ -18,6 +18,7 @@ import com.artillexstudios.axplayerwarps.input.InputManager;
 import com.artillexstudios.axplayerwarps.sorting.WarpComparator;
 import com.artillexstudios.axplayerwarps.user.Users;
 import com.artillexstudios.axplayerwarps.user.WarpUser;
+import com.artillexstudios.axplayerwarps.utils.GuiConfigUtils;
 import com.artillexstudios.axplayerwarps.warps.Warp;
 import com.artillexstudios.axplayerwarps.warps.WarpManager;
 import net.kyori.adventure.text.Component;
@@ -72,6 +73,7 @@ public class MyWarpsGui extends PapiPaginatedGuiFrame {
 
     public static boolean reload() {
         if (!GUI.reload()) return false;
+        GuiConfigUtils.applyItemModelAlias(GUI);
 
         boolean changed = false;
         if (GUI.getSection("category") != null) {
@@ -155,8 +157,12 @@ public class MyWarpsGui extends PapiPaginatedGuiFrame {
                 int i2 = i;
                 AsyncUtils.submit(() -> {
                     ItemStack icon = warp.getIcon();
-                    ItemBuilder builder = ItemBuilder.create(icon);
+                    GuiConfigUtils.ConfiguredItem configuredItem = warp.getRealIcon() == null
+                            ? GuiConfigUtils.createConfiguredItem(GUI.getSection("warp"), warp.getOwnerName(), player)
+                            : null;
+                    ItemBuilder builder = configuredItem == null ? ItemBuilder.create(icon) : configuredItem.builder();
                     builder.setName(parseText(GUI.getString("warp.name"), warp));
+                    GuiConfigUtils.applyItemModel(builder, parseText(GUI.getString("warp.item-model", ""), warp));
 
                     String[] description = warp.getDescription().split("\n", CONFIG.getInt("warp-description.max-lines", 3));
 
@@ -173,7 +179,7 @@ public class MyWarpsGui extends PapiPaginatedGuiFrame {
                         }
                     }
                     builder.setLore(parseText(lore, warp));
-                    if (warp.getRealIcon() == null && icon.getType() == Material.PLAYER_HEAD) {
+                    if (configuredItem == null && warp.getRealIcon() == null && icon.getType() == Material.PLAYER_HEAD) {
                         Player pl = Bukkit.getPlayer(warp.getOwner());
                         if (pl != null) {
                             ServerPlayerWrapper wrapper = ServerPlayerWrapper.wrap(pl);
@@ -182,7 +188,12 @@ public class MyWarpsGui extends PapiPaginatedGuiFrame {
                         }
                     }
 
-                    AxGuiItem axGuiItem = new AxGuiItem(builder.get(), event -> {
+                    ItemStack item = builder.get();
+                    if (configuredItem != null) {
+                        GuiConfigUtils.applyHeadOwner(item, configuredItem.headName() == null ? warp.getOwnerName() : configuredItem.headName());
+                    }
+
+                    AxGuiItem axGuiItem = new AxGuiItem(item, event -> {
                         if (event.isLeftClick()) {
                             warp.teleportPlayer(player);
                         } else {

@@ -3,16 +3,23 @@ package com.artillexstudios.axplayerwarps.commands;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axplayerwarps.AxPlayerWarps;
 import com.artillexstudios.axplayerwarps.commands.annotations.AllWarps;
+import com.artillexstudios.axplayerwarps.commands.annotations.SelectWarp;
 import com.artillexstudios.axplayerwarps.commands.subcommands.Converter;
 import com.artillexstudios.axplayerwarps.commands.subcommands.Reload;
 import com.artillexstudios.axplayerwarps.enums.AccessList;
 import com.artillexstudios.axplayerwarps.enums.Converters;
+import com.artillexstudios.axplayerwarps.input.DialogSelect;
+import com.artillexstudios.axplayerwarps.input.InputManager;
+import com.artillexstudios.axplayerwarps.utils.PlayerLookup;
 import com.artillexstudios.axplayerwarps.warps.Warp;
 import com.artillexstudios.axplayerwarps.warps.WarpManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import revxrsal.commands.annotation.DefaultFor;
+import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.exception.CommandErrorException;
@@ -41,11 +48,18 @@ public class AdminCommand implements OrphanCommand {
 
     @Subcommand("delete")
     @CommandPermission("axplayerwarps.admin.delete")
-    public void delete(@NotNull CommandSender sender, @AllWarps Warp warp) {
-        AxPlayerWarps.getThreadedQueue().submit(() -> {
-            AxPlayerWarps.getDatabase().deleteWarp(warp);
-            MESSAGEUTILS.sendLang(sender, "admin.deleted", Map.of("%warp%", warp.getName()));
-        });
+    public void delete(@NotNull CommandSender sender, @Optional @SelectWarp @AllWarps Warp warp) {
+        if (warp != null) {
+            performDelete(sender, warp);
+            return;
+        }
+
+        if (!(sender instanceof Player player)) {
+            missing(sender, "warp");
+            return;
+        }
+
+        DialogSelect.warp(player, null, WarpManager.getWarps(), selected -> performDelete(sender, selected));
     }
 
     @Subcommand("deleteid")
@@ -69,7 +83,52 @@ public class AdminCommand implements OrphanCommand {
 
     @Subcommand("setowner")
     @CommandPermission("axplayerwarps.admin.setowner")
-    public void setOwner(@NotNull CommandSender sender, @AllWarps Warp warp, OfflinePlayer player) {
+    public void setOwner(@NotNull CommandSender sender, @Optional @SelectWarp @AllWarps Warp warp, @Optional OfflinePlayer player) {
+        if (warp == null) {
+            if (!(sender instanceof Player playerSender)) {
+                missing(sender, "warp");
+                return;
+            }
+
+            DialogSelect.warp(playerSender, null, WarpManager.getWarps(), selected -> {
+                if (player != null) {
+                    performSetOwner(sender, selected, player);
+                    return;
+                }
+                InputManager.getInput(playerSender, "transfer", result ->
+                        PlayerLookup.find(playerSender, result, target -> performSetOwner(sender, selected, target)));
+            });
+            return;
+        }
+
+        if (player != null) {
+            performSetOwner(sender, warp, player);
+            return;
+        }
+
+        if (!(sender instanceof Player playerSender)) {
+            missing(sender, "player");
+            return;
+        }
+
+        InputManager.getInput(playerSender, "transfer", result ->
+                PlayerLookup.find(playerSender, result, target -> performSetOwner(sender, warp, target)));
+    }
+
+    @Subcommand("converter")
+    @CommandPermission("axplayerwarps.admin.converter")
+    public void converter(CommandSender sender, Converters converters) {
+        Converter.INSTANCE.execute(sender, converters);
+    }
+
+    private void performDelete(CommandSender sender, Warp warp) {
+        AxPlayerWarps.getThreadedQueue().submit(() -> {
+            AxPlayerWarps.getDatabase().deleteWarp(warp);
+            MESSAGEUTILS.sendLang(sender, "admin.deleted", Map.of("%warp%", warp.getName()));
+        });
+    }
+
+    private void performSetOwner(CommandSender sender, Warp warp, OfflinePlayer player) {
         AxPlayerWarps.getThreadedQueue().submit(() -> {
             warp.setOwner(player.getUniqueId());
             AxPlayerWarps.getDatabase().updateWarp(warp);
@@ -80,9 +139,7 @@ public class AdminCommand implements OrphanCommand {
         });
     }
 
-    @Subcommand("converter")
-    @CommandPermission("axplayerwarps.admin.converter")
-    public void converter(CommandSender sender, Converters converters) {
-        Converter.INSTANCE.execute(sender, converters);
+    private void missing(CommandSender sender, String what) {
+        sender.sendMessage(StringUtils.formatToString("&#FF4444You must specify a " + what + "!"));
     }
 }

@@ -3,6 +3,7 @@ package com.artillexstudios.axplayerwarps.commands;
 import com.artillexstudios.axplayerwarps.AxPlayerWarps;
 import com.artillexstudios.axplayerwarps.commands.annotations.AllWarps;
 import com.artillexstudios.axplayerwarps.commands.annotations.OwnWarps;
+import com.artillexstudios.axplayerwarps.commands.annotations.SelectWarp;
 import com.artillexstudios.axplayerwarps.utils.CommandMessages;
 import com.artillexstudios.axplayerwarps.warps.Warp;
 import com.artillexstudios.axplayerwarps.warps.WarpManager;
@@ -44,6 +45,9 @@ public class CommandManager {
             String name = resolver.popForParameter();
             Warp warp = WarpManager.getWarp(name);
             if (warp == null) {
+                if (resolver.parameter().isOptional() && resolver.parameter().hasAnnotation(SelectWarp.class)) {
+                    return null;
+                }
                 MESSAGEUTILS.sendLang(resolver.actor().as(BukkitCommandActor.class).getSender(), "errors.not-found", Map.of("%warp%", name));
                 throw new CommandErrorException();
             }

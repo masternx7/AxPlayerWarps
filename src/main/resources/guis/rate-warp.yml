@@ -1,5 +1,8 @@
 # DOCUMENTATION: https://docs.artillex-studios.com/axplayerwarps.html
 # ITEM BUILDER: https://docs.artillex-studios.com/item-builder.html
+# you can set a custom item model on any item (requires a resource pack)
+# both item_model and item-model are accepted, for example:
+# item_model: "yourpack:custom_item"
 
 # title supports PlaceholderAPI placeholders and built-in placeholders:
 # %player%, %warp%, %name%

@@ -22,6 +22,7 @@ import com.artillexstudios.axplayerwarps.enums.AccessList;
 import com.artillexstudios.axplayerwarps.input.InputManager;
 import com.artillexstudios.axplayerwarps.user.Users;
 import com.artillexstudios.axplayerwarps.user.WarpUser;
+import com.artillexstudios.axplayerwarps.utils.GuiConfigUtils;
 import com.artillexstudios.axplayerwarps.utils.WarpNameUtils;
 import com.artillexstudios.axplayerwarps.warps.Warp;
 import com.artillexstudios.axplayerwarps.warps.WarpManager;
@@ -84,6 +85,7 @@ public class EditWarpGui extends PapiGuiFrame<Gui> {
 
     public static boolean reload() {
         if (!GUI.reload()) return false;
+        GuiConfigUtils.applyItemModelAlias(GUI);
         if (GUI.getSection("category") != null) {
             GUI.remove("category");
             GUI.save();

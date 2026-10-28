@@ -16,6 +16,7 @@ import com.artillexstudios.axplayerwarps.AxPlayerWarps;
 import com.artillexstudios.axplayerwarps.input.InputManager;
 import com.artillexstudios.axplayerwarps.user.Users;
 import com.artillexstudios.axplayerwarps.user.WarpUser;
+import com.artillexstudios.axplayerwarps.utils.GuiConfigUtils;
 import com.artillexstudios.axplayerwarps.warps.Warp;
 import org.bukkit.entity.Player;
 
@@ -57,7 +58,9 @@ public class RateWarpGui extends PapiGuiFrame<Gui> {
     }
 
     public static boolean reload() {
-        return GUI.reload();
+        if (!GUI.reload()) return false;
+        GuiConfigUtils.applyItemModelAlias(GUI);
+        return true;
     }
 
     public void open() {

@@ -5,7 +5,6 @@ import com.artillexstudios.axapi.libs.boostedyaml.settings.dumper.DumperSettings
 import com.artillexstudios.axapi.libs.boostedyaml.settings.general.GeneralSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.settings.loader.LoaderSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettings;
-import com.artillexstudios.axapi.nms.wrapper.ServerPlayerWrapper;
 import com.artillexstudios.axapi.placeholders.PlaceholderHandler;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
@@ -19,12 +18,13 @@ import com.artillexstudios.axplayerwarps.enums.AccessList;
 import com.artillexstudios.axplayerwarps.input.InputManager;
 import com.artillexstudios.axplayerwarps.user.Users;
 import com.artillexstudios.axplayerwarps.user.WarpUser;
+import com.artillexstudios.axplayerwarps.utils.GuiConfigUtils;
 import com.artillexstudios.axplayerwarps.utils.PlaceholderUtils;
 import com.artillexstudios.axplayerwarps.warps.Warp;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -74,7 +74,9 @@ public class WhitelistGui extends PapiPaginatedGuiFrame {
     }
 
     public static boolean reload() {
-        return GUI.reload();
+        if (!GUI.reload()) return false;
+        GuiConfigUtils.applyItemModelAlias(GUI);
+        return true;
     }
 
     public void open() {
@@ -124,22 +126,22 @@ public class WhitelistGui extends PapiPaginatedGuiFrame {
         AxPlayerWarps.getThreadedQueue().submit(() -> {
             gui.clearPageItems();
             for (Base.AccessPlayer accessPlayer : warp.getAccessList(accessList)) {
-                ItemBuilder builder = ItemBuilder.create(section.getSection(accessList.getRoute()));
-                if (builder.get().getType() == Material.PLAYER_HEAD) {
-                    Player pl = Bukkit.getPlayer(warp.getOwner());
-                    if (pl != null) {
-                        ServerPlayerWrapper wrapper = ServerPlayerWrapper.wrap(pl);
-                        var textures = wrapper.textures();
-                        if (textures.texture() != null) builder.setTextureValue(textures.texture());
-                    }
-                }
+                GuiConfigUtils.ConfiguredItem configuredItem = GuiConfigUtils.createConfiguredItem(section.getSection(accessList.getRoute()), accessPlayer.name(), player);
+                ItemBuilder builder = configuredItem == null
+                        ? ItemBuilder.create(section.getSection(accessList.getRoute()))
+                        : configuredItem.builder();
 
                 builder.setName(PlaceholderUtils.parse(player, PlaceholderHandler.parse(GUI.getString(accessList.getRoute() + ".name"), accessPlayer, player)));
                 List<String> lore = new ArrayList<>(GUI.getStringList(accessList.getRoute() + ".lore"));
                 lore.replaceAll(s -> PlaceholderUtils.parse(player, PlaceholderHandler.parse(s, accessPlayer, player)));
                 builder.setLore(lore);
 
-                gui.addItem(new AxGuiItem(builder.get(), event -> {
+                ItemStack item = builder.get();
+                if (configuredItem != null) {
+                    GuiConfigUtils.applyHeadOwner(item, configuredItem.headName() == null ? warp.getOwnerName() : configuredItem.headName());
+                }
+
+                gui.addItem(new AxGuiItem(item, event -> {
                     AxPlayerWarps.getThreadedQueue().submit(() -> {
                         AxPlayerWarps.getDatabase().removeFromList(warp, accessList, accessPlayer.player());
                         MESSAGEUTILS.sendLang(player, accessList.name().toLowerCase() + ".remove", Map.of("%player%", accessPlayer.name()));

@@ -7,7 +7,7 @@ help:
   - " <#33CCBB>➤ <white>/axpw create <name> <#DDDDDD>| <#BBFFDD>Create warp"
   - " <#33CCBB>➤ <white>/axpw delete <warp> <#DDDDDD>| <#BBFFDD>Delete warp"
   - " <#33CCBB>➤ <white>/axpw edit <warp> <#DDDDDD>| <#BBFFDD>Open warp editor"
-  - " <#33CCBB>➤ <white>/axpw warp <warp> <#DDDDDD>| <#BBFFDD>Teleport to warp"
+  - " <#33CCBB>➤ <white>/axpw <warp> <#DDDDDD>| <#BBFFDD>Teleport to warp"
   - " <#33CCBB>➤ <white>/axpw info <warp> <#DDDDDD>| <#BBFFDD>Warp information"
   - " <#33CCBB>➤ <white>/axpw set <warp> <#DDDDDD>| <#BBFFDD>Update warp location"
   - " <#33CCBB>➤ <white>/axpw rename <warp> <name> <#DDDDDD>| <#BBFFDD>Rename warp"
@@ -125,6 +125,7 @@ admin:
   setowner: "&#FF4444You have transferred the &#FF0000%warp% &#FF4444warp to &#FF0000%player%&#FF4444!"
 
 errors:
+  no-warps: "&#FF4444You don't have any warps yet!"
   disallowed-name-space: "&#FF4444The given warp name cannot contain spaces!"
   disallowed-name-length: "&#FF4444The length of the given warp name is too short or too long!"
   disallowed-name-blacklisted: "&#FF4444The given warp name is disallowed!"
